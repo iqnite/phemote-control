@@ -39,7 +39,7 @@ const Keypad: React.FC = () => {
             <p className={styles.inputDisplay}>{inputDisplay}</p>
             <div className={styles.keypadContainer}>
                 {keys.map((key) => {
-                    function startAudioTrack(event: any) {
+                    function activateKeypad(event: any) {
                         const keySound = audio.find(
                             (item) => item.key === key
                         );
@@ -51,6 +51,7 @@ const Keypad: React.FC = () => {
                             keySound.sound.currentTime = 0;
                             setTimeout(()=>keySound.sound.play(), 0);
                         }
+                        setInputDisplay((inputDisplay + key).slice(-maxDigits));
                     }
 
                     function stopAudioTrack() {
@@ -66,13 +67,10 @@ const Keypad: React.FC = () => {
                         color="light"
                         size="large"
                         className={styles.key}
-                        onClick={() => {
-                            setInputDisplay((inputDisplay + key).slice(-maxDigits));
-                        }}
-
-                        onMouseDown={startAudioTrack}
+                        
+                        onMouseDown={activateKeypad}
                         onMouseUp={stopAudioTrack}
-                        onTouchStart={startAudioTrack}
+                        onTouchStart={activateKeypad}
                         onTouchCancel={stopAudioTrack}
                     >
                         {key}
