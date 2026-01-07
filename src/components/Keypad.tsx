@@ -10,7 +10,7 @@ const Keypad: React.FC = () => {
                 {keys.map((key) => (
                     <IonButton
                         key={key}
-                        color={"light"}
+                        color="light"
                         size="large"
                         className={styles.key}
                         onClick={() => {
