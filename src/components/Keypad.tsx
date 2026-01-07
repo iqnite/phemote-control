@@ -70,9 +70,9 @@ const Keypad: React.FC = () => {
                         className={styles.key + (isFinite(+key) ? " " +styles.numberKey : "")}
                         
                         onMouseDown={activateKeypad}
-                        onMouseUp={stopAudioTrack}
+                        //onMouseUp={stopAudioTrack}
                         onTouchStart={activateKeypad}
-                        onTouchCancel={stopAudioTrack}
+                        //onTouchCancel={stopAudioTrack}
                     >
                         {key}
                     </IonButton>
