@@ -36,7 +36,9 @@ const Keypad: React.FC = () => {
 
     return (
         <div className={styles.bottomContainer}>
-            <p className={styles.inputDisplay}>{inputDisplay}</p>
+            <p className={styles.inputDisplay} onMouseDown={()=>setInputDisplay("")}>
+              {inputDisplay}
+            </p>
             <div className={styles.keypadContainer}>
                 {keys.map((key) => {
                     function activateKeypad(event: any) {
