@@ -42,23 +42,36 @@ const Keypad: React.FC = () => {
         if (inputDisplay.includes("*037#")) {
             setInputDisplay("037");
         }
-    })
+    });
 
     const platforms = getPlatforms();
-    console.log(platforms);
+    window.addEventListener("blur", stopSynth);
 
     return (
         <div className={styles.bottomContainer}>
-            <IonChip disabled={true} style={{ transform: "scale(5)", position: "fixed", top: "50%", left: "50%", display: inputDisplay === "037" ? "block" : "none" }}>
+            <IonChip
+                disabled={true}
+                style={{
+                    transform: "scale(5)",
+                    position: "fixed",
+                    top: "50%",
+                    left: "50%",
+                    display: inputDisplay === "037" ? "block" : "none",
+                }}
+            >
                 <IonAvatar>
                     <img alt="LEO" src="/037.jpeg" />
                 </IonAvatar>
-                <IonLabel style={{ transform: 'rotate(180deg)' }}>037</IonLabel>
+                <IonLabel style={{ transform: "rotate(180deg)" }}>037</IonLabel>
             </IonChip>
             <p
                 className={styles.inputDisplay}
                 onClick={() => setInputDisplay("")}
-                style={inputDisplay === "037" ? { transform: 'rotate(180deg)' } : {}}
+                style={
+                    inputDisplay === "037"
+                        ? { transform: "rotate(180deg)" }
+                        : {}
+                }
             >
                 {inputDisplay}
             </p>
@@ -66,11 +79,19 @@ const Keypad: React.FC = () => {
                 {keys.map((key) => {
                     function activateKeypad() {
                         setTimeout(() => startSynth(key), 0);
-                        const newDisplay = (inputDisplay + key);
+                        const newDisplay = inputDisplay + key;
                         setInputDisplay(newDisplay.slice(-maxDigits));
 
-                        if (newDisplay.startsWith("#") && newDisplay.endsWith("#") && newDisplay.split("*").length === 4 && newDisplay.split("#").length === 4) {
-                            const ip = newDisplay.slice(1, newDisplay.length - 1).replaceAll("*", ".").replaceAll("#", ":");
+                        if (
+                            newDisplay.startsWith("#") &&
+                            newDisplay.endsWith("#") &&
+                            newDisplay.split("*").length === 4 &&
+                            newDisplay.split("#").length === 4
+                        ) {
+                            const ip = newDisplay
+                                .slice(1, newDisplay.length - 1)
+                                .replaceAll("*", ".")
+                                .replaceAll("#", ":");
                             setTargetIp(ip);
                             console.log(ip);
                             setInputDisplay("");
@@ -78,26 +99,30 @@ const Keypad: React.FC = () => {
 
                         fetch("http://" + targetIp, {
                             method: "POST",
-                            body: JSON.stringify({ action: isFinite(+key) ? +key : key })
+                            body: JSON.stringify({ action: key }),
                         }).then(() => {
                             console.log("Sent successfully");
                         });
                     }
 
-                    const button = <IonButton
-                        key={key}
-                        size="large"
-                        color={isFinite(+key) ? "light" : "medium"}
-                        className={styles.key}
-                        {...platforms.includes("desktop") ? ({
-                            onMouseDown: activateKeypad,
-                            onMouseUp: stopSynth
-                        }) : {}}
-                        onTouchStart={activateKeypad}
-                        onTouchEnd={stopSynth}
-                    >
-                        {key}
-                    </IonButton>;
+                    const button = (
+                        <IonButton
+                            key={key}
+                            size="large"
+                            color={isFinite(+key) ? "light" : "medium"}
+                            className={styles.key}
+                            {...(platforms.includes("desktop")
+                                ? {
+                                      onMouseDown: activateKeypad,
+                                      onMouseUp: stopSynth,
+                                  }
+                                : {})}
+                            onTouchStart={activateKeypad}
+                            onTouchEnd={stopSynth}
+                        >
+                            {key}
+                        </IonButton>
+                    );
 
                     // window.addEventListener("keydown", (e) => {
                     //   if ((e.key === key) && buttonRef.current && !e.repeat) {
