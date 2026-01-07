@@ -25,12 +25,11 @@ const Keypad: React.FC = () => {
 
     useEffect(() => {
         keys.forEach((key) => {
-            let soundName;
-            if (key === "*") soundName = "asterisk";
-            else if (key === "#") soundName = "hash";
-            else soundName = key;
+            let soundName = key.replace("*", "asterisk").replace("#", "hash");
+
             const sound = new Audio(`/keypad_sfx/${soundName}.mp3`);
-            sound.loop = true;
+            sound.load();
+            sound.loop = false;
             setAudio((prevAudio) => [...prevAudio, { key: key, sound: sound }]);
         });
     }, [keys]);
@@ -39,8 +38,30 @@ const Keypad: React.FC = () => {
         <div className={styles.bottomContainer}>
             <p className={styles.inputDisplay}>{inputDisplay}</p>
             <div className={styles.keypadContainer}>
-                {keys.map((key) => (
-                    <IonButton
+                {keys.map((key) => {
+                    function startAudioTrack(event: any) {
+                        const keySound = audio.find(
+                            (item) => item.key === key
+                        );
+                        if (event instanceof TouchEvent) {
+                          if (event.touches.length > 0) {return;}
+                        }
+                        if (keySound) {
+                            keySound.sound.volume = 1;
+                            keySound.sound.currentTime = 0;
+                            setTimeout(()=>keySound.sound.play(), 0);
+                        }
+                    }
+
+                    function stopAudioTrack() {
+                        const keySound = audio.find(
+                            (item) => item.key === key
+                        );
+                        if (keySound && !keySound.sound.paused) {
+                            keySound.sound.volume = 0;
+                        }
+                    }
+                    return <IonButton
                         key={key}
                         color="light"
                         size="large"
@@ -48,31 +69,15 @@ const Keypad: React.FC = () => {
                         onClick={() => {
                             setInputDisplay((inputDisplay + key).slice(-maxDigits));
                         }}
-                        onTouchStart={() => {
-                            const keySound = audio.find(
-                                (item) => item.key === key
-                            );
-                            if (keySound) {
-                                keySound.sound.currentTime = 0;
-                                setTimeout(() => {
-                                    keySound.sound.play();
-                                }, 50);
-                            }
-                            console.log("Touch start on key:", key);
-                        }}
-                        onTouchEnd={() => {
-                            const keySound = audio.find(
-                                (item) => item.key === key
-                            );
-                            if (keySound) {
-                                keySound.sound.pause();
-                                keySound.sound.currentTime = 0;
-                            }
-                        }}
+
+                        onMouseDown={startAudioTrack}
+                        onMouseUp={stopAudioTrack}
+                        onTouchStart={startAudioTrack}
+                        onTouchCancel={stopAudioTrack}
                     >
                         {key}
                     </IonButton>
-                ))}
+})}
             </div>
         </div>
     );
