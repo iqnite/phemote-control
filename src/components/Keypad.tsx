@@ -36,9 +36,18 @@ const Keypad: React.FC = () => {
   //   });
   // }, [keys]);
 
+  useEffect(() => {
+    if (inputDisplay.includes("037")) {
+
+    }
+  })
+
   return (
     <div className={styles.bottomContainer}>
-      <p className={styles.inputDisplay} onMouseDown={() => setInputDisplay("")}>
+      <p
+        className={styles.inputDisplay}
+        onMouseDown={() => setInputDisplay("")}
+        style={{transform: '180deg'}}>
         {inputDisplay}
       </p>
       <div className={styles.keypadContainer}>
