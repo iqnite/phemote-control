@@ -54,6 +54,7 @@ const Keypad: React.FC = () => {
             }
             if (keySound) {
               keySound.sound.volume = 1;
+              keySound.sound.loop = true;
               keySound.sound.currentTime = 0;
               setTimeout(() => keySound.sound.play(), 0);
             }
@@ -78,8 +79,8 @@ const Keypad: React.FC = () => {
 
             onMouseDown={e => activateKeypad(e, "")}
             onKeyDown={e => activateKeypad(e, e.repeat ? "ignore" : e.key)}
-            //onMouseUp={stopAudioTrack}
-            onTouchStart={e => activateKeypad(e, "")}
+            onMouseUp={stopAudioTrack}
+            // onTouchStart={e => activateKeypad(e, "")}
           //onTouchCancel={stopAudioTrack}
           >
             {key}
