@@ -1,0 +1,12 @@
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 5px;
+  margin: 0 auto;
+  max-width: 300px;
+}
+
+.key {
+  --border-radius: 50%;
+  aspect-ratio: 1;
+}
