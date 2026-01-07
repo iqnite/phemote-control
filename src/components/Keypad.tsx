@@ -1,18 +1,27 @@
-import React from 'react';
-import { IonButton } from '@ionic/react';
-import styles from './Keypad.module.css';
+import React from "react";
+import { IonButton } from "@ionic/react";
+import styles from "./Keypad.module.css";
 
-interface ContainerProps { }
+interface ContainerProps {}
 
 const Keypad: React.FC<ContainerProps> = () => {
-  const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#']
-  return (
-    <div className={styles.container}>
-      {keys.map(key => (
-        <IonButton key={key} color={'light'} size='large' className={styles.key}>{key}</IonButton>
-      ))}
-    </div>
-  );
+    const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"];
+    return (
+        <div className={styles.bottomContainer}>
+            <div className={styles.keypadContainer}>
+                {keys.map((key) => (
+                    <IonButton
+                        key={key}
+                        color={"light"}
+                        size="large"
+                        className={styles.key}
+                    >
+                        {key}
+                    </IonButton>
+                ))}
+            </div>
+        </div>
+    );
 };
 
 export default Keypad;

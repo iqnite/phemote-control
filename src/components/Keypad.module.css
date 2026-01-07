@@ -1,9 +1,16 @@
-.container {
+.keypadContainer {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 5px;
   margin: 0 auto;
   max-width: 300px;
+  text-align: center;
+}
+
+.bottomContainer {
+    bottom: 10px;
+    position: fixed;
+    width: 100%;
 }
 
 .key {
