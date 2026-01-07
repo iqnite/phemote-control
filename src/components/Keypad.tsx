@@ -80,6 +80,7 @@ const Keypad: React.FC = () => {
                         onTouchStart={e => activateKeypad(e.touches.length)}
                         onTouchCancel={stopSynth}
                         onTouchEnd={() => setTimeout(stopSynth, 50)}
+                        onContextMenu={(e)=>e.preventDefault()}
                     >
                         {key}
                     </IonButton>;
