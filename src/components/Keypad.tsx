@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { IonButton } from "@ionic/react";
+import { IonAvatar, IonButton, IonChip, IonLabel } from "@ionic/react";
 import styles from "./Keypad.module.css";
 import { startSynth, stopSynth } from "../lib/phonesynth";
 
@@ -38,17 +38,23 @@ const Keypad: React.FC = () => {
     // }, [keys]);
 
     useEffect(() => {
-        if (inputDisplay.includes("037")) {
-
+        if (inputDisplay.includes("*037#")) {
+            setInputDisplay("037");
         }
     })
 
     return (
         <div className={styles.bottomContainer}>
+        <IonChip disabled={true} style={{transform: "scale(5)" }}>
+                <IonAvatar>
+                    <img alt="LEO" src="/037.jpeg" />
+                </IonAvatar>
+                <IonLabel style={{ transform: 'rotate(180deg)' }}>037</IonLabel>
+            </IonChip>
             <p
                 className={styles.inputDisplay}
-                style={{ transform: '180deg' }}
                 onTouchStart={()=>setInputDisplay("")}
+                style={inputDisplay === "037" ? { transform: 'rotate(180deg)' } : {}}
             >
                 {inputDisplay}
             </p>
@@ -89,7 +95,7 @@ const Keypad: React.FC = () => {
                         onTouchStart={e => activateKeypad(e.touches.length)}
                         onTouchCancel={stopSynth}
                         onTouchEnd={() => setTimeout(stopSynth, 50)}
-                        onContextMenu={(e)=>e.preventDefault()}
+                        onContextMenu={(e) => e.preventDefault()}
                     >
                         {key}
                     </IonButton>;
