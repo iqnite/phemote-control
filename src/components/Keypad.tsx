@@ -61,7 +61,7 @@ const Keypad: React.FC = () => {
             <div className={styles.keypadContainer}>
                 {keys.map((key) => {
                     function activateKeypad(touchCount: number) {
-                        if (touchCount > 1) { return; }
+                        //if (touchCount > 1) { return; }
                         setTimeout(() => startSynth(key), 0);
                         const newDisplay = (inputDisplay + key);
                         setInputDisplay(newDisplay.slice(-maxDigits));
