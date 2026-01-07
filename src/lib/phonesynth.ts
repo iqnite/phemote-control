@@ -1,6 +1,7 @@
 let audioCtx: AudioContext | null = null;
 let osc1: OscillatorNode | null = null;
 let osc2: OscillatorNode | null = null;
+let gainNode: GainNode | null = null;
 
 const orderedKeys = [
     "1", "2", "3", "A",
@@ -19,10 +20,16 @@ function setupAudioContext() {
     audioCtx = new AudioContext({
         sampleRate: 24000
     });
+    gainNode = audioCtx.createGain();
+    gainNode.gain.setValueAtTime(0, 0);
+    gainNode.connect(audioCtx.destination);
     osc1 = audioCtx.createOscillator();
-    osc1.connect(audioCtx.destination);
+    osc1.connect(gainNode);
+    osc1.start(0);
     osc2 = audioCtx.createOscillator();
-    osc2.connect(audioCtx.destination);
+    osc2.connect(gainNode);
+    osc2.start(0);
+    
 }
 export function startSynth(key: string) {
     // expects to be called after a user interaction
@@ -33,19 +40,19 @@ export function startSynth(key: string) {
 
     const index = orderedKeys.indexOf(key.toUpperCase());
     const f1 = horizontalFrequencies[index % 4];
-    const f2 = horizontalFrequencies[Math.floor(index / 4)];
+    const f2 = verticalFrequencies[Math.floor(index / 4)];
+    //console.log("Synth Started");
     if (osc1) {
         osc1.frequency.setValueAtTime(f1, 0);
-        osc1.type = "triangle";
-        osc1.start(0);
+        osc1.type = "sine";
     }
     if (osc2) {
         osc2.frequency.setValueAtTime(f2, 0);
-        osc2.type = "triangle";
-        osc2.start(0);
+        osc2.type = "sine";
     }
+    gainNode?.gain?.setValueAtTime(1, 0);
 }
 export function stopSynth() {
-    osc1?.stop();
-    osc2?.stop();
+    //console.log("Synth Stopped");
+    gainNode?.gain?.setValueAtTime(0, 0);
 }

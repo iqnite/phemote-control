@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { IonButton } from "@ionic/react";
 import styles from "./Keypad.module.css";
+import { startSynth, stopSynth } from "../lib/phonesynth";
 
 const Keypad: React.FC = () => {
   const maxDigits = 20;
@@ -24,16 +25,16 @@ const Keypad: React.FC = () => {
   >([]);
   const [inputDisplay, setInputDisplay] = useState("");
 
-  useEffect(() => {
-    keys.forEach((key) => {
-      let soundName = key.replace("*", "asterisk").replace("#", "hash");
+  // useEffect(() => {
+  //   keys.forEach((key) => {
+  //     let soundName = key.replace("*", "asterisk").replace("#", "hash");
 
-      const sound = new Audio(`/keypad_sfx/${soundName}.mp3`);
-      sound.load();
-      sound.loop = false;
-      setAudio((prevAudio) => [...prevAudio, { key: key, sound: sound }]);
-    });
-  }, [keys]);
+  //     const sound = new Audio(`/keypad_sfx/${soundName}.mp3`);
+  //     sound.load();
+  //     sound.loop = false;
+  //     setAudio((prevAudio) => [...prevAudio, { key: key, sound: sound }]);
+  //   });
+  // }, [keys]);
 
   return (
     <div className={styles.bottomContainer}>
@@ -42,22 +43,9 @@ const Keypad: React.FC = () => {
       </p>
       <div className={styles.keypadContainer}>
         {keys.map((key) => {
-          function activateKeypad(event: any, keycode: string) {
-            const keySound = audio.find(
-              (item) => item.key === key
-            );
-            if (event instanceof TouchEvent) {
-              if (event.touches.length > 0) { return; }
-            }
-            if (keycode && (keycode !== "Enter")) {
-              return;
-            }
-            if (keySound) {
-              keySound.sound.volume = 1;
-              keySound.sound.loop = true;
-              keySound.sound.currentTime = 0;
-              setTimeout(() => keySound.sound.play(), 0);
-            }
+          function activateKeypad(touchCount: number) {
+            if (touchCount > 1) { return; }
+            setTimeout(()=>startSynth(key), 0);
             setInputDisplay((inputDisplay + key).slice(-maxDigits));
           }
 
@@ -77,20 +65,21 @@ const Keypad: React.FC = () => {
             color="light"
             className={styles.key + (isFinite(+key) ? " " + styles.numberKey : "")}
 
-            onMouseDown={e => activateKeypad(e, "")}
-            onKeyDown={e => activateKeypad(e, e.repeat ? "ignore" : e.key)}
-            onMouseUp={stopAudioTrack}
-            // onTouchStart={e => activateKeypad(e, "")}
-          //onTouchCancel={stopAudioTrack}
+            //onMouseDown={e => activateKeypad(e, "")}
+            //onKeyDown={e => activateKeypad(e, e.repeat ? "ignore" : e.key)}
+            //onMouseUp={stopAudioTrack}
+            onTouchStart={e => activateKeypad(e.touches.length)}
+            onTouchCancel={stopSynth}
+            onTouchEnd={()=>setTimeout(stopSynth, 50)}
           >
             {key}
           </IonButton>;
 
-          window.addEventListener("keydown", (e) => {
-            if ((e.key === key) && buttonRef.current && !e.repeat) {
-              setTimeout(()=>activateKeypad(e, ""), 0);
-            }
-          });
+          // window.addEventListener("keydown", (e) => {
+          //   if ((e.key === key) && buttonRef.current && !e.repeat) {
+          //     setTimeout(()=>activateKeypad(e, ""), 0);
+          //   }
+          // });
 
           return button;
         })}
