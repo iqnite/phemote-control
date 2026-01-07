@@ -41,12 +41,15 @@ const Keypad: React.FC = () => {
             </p>
             <div className={styles.keypadContainer}>
                 {keys.map((key) => {
-                    function activateKeypad(event: any) {
+                    function activateKeypad(event: any, keycode: string) {
                         const keySound = audio.find(
                             (item) => item.key === key
                         );
                         if (event instanceof TouchEvent) {
                           if (event.touches.length > 0) {return;}
+                        }
+                        if (keycode && (keycode !== "Enter")) {
+                          return;
                         }
                         if (keySound) {
                             keySound.sound.volume = 1;
@@ -71,9 +74,10 @@ const Keypad: React.FC = () => {
                         color="light"
                         className={styles.key + (isFinite(+key) ? " " +styles.numberKey : "")}
                         
-                        onMouseDown={activateKeypad}
+                        onMouseDown={e=>activateKeypad(e, "")}
+                        onKeyDown={e=>activateKeypad(e, e.repeat ? "ignore" : e.key)}
                         //onMouseUp={stopAudioTrack}
-                        onTouchStart={activateKeypad}
+                        onTouchStart={e=>activateKeypad(e, "")}
                         //onTouchCancel={stopAudioTrack}
                     >
                         {key}
