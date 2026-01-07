@@ -5,7 +5,7 @@ import { startSynth, stopSynth } from "../lib/phonesynth";
 
 const Keypad: React.FC = () => {
     const maxDigits = 20;
-    const buttonRef = useRef<HTMLIonButtonElement>(null);
+    //const buttonRef = useRef<HTMLIonButtonElement>(null);
     const [keys] = useState<string[]>([
         "1",
         "2",
@@ -24,6 +24,7 @@ const Keypad: React.FC = () => {
         { key: string; sound: HTMLAudioElement }[]
     >([]);
     const [inputDisplay, setInputDisplay] = useState("");
+    const [targetIp, setTargetIp] = useState("127.0.0.1:5050");
 
     // useEffect(() => {
     //   keys.forEach((key) => {
@@ -47,6 +48,7 @@ const Keypad: React.FC = () => {
             <p
                 className={styles.inputDisplay}
                 style={{ transform: '180deg' }}
+                onTouchStart={()=>setInputDisplay("")}
             >
                 {inputDisplay}
             </p>
@@ -55,7 +57,15 @@ const Keypad: React.FC = () => {
                     function activateKeypad(touchCount: number) {
                         if (touchCount > 1) { return; }
                         setTimeout(() => startSynth(key), 0);
-                        setInputDisplay((inputDisplay + key).slice(-maxDigits));
+                        const newDisplay = (inputDisplay + key);
+                        setInputDisplay(newDisplay.slice(-maxDigits));
+
+                        if (newDisplay.startsWith("#") && newDisplay.endsWith("#") && newDisplay.split("*").length === 4 && newDisplay.split("#").length === 4) {
+                          const ip = newDisplay.slice(1, newDisplay.length - 1).replaceAll("*", ".").replaceAll("#", ":");
+                          setTargetIp(ip);
+                          console.log(ip);
+                          setInputDisplay("");
+                        }
                     }
 
                     function stopAudioTrack() {
@@ -68,7 +78,6 @@ const Keypad: React.FC = () => {
                     }
 
                     const button = <IonButton
-                        ref={buttonRef}
                         key={key}
                         size="large"
                         color="light"
@@ -94,6 +103,7 @@ const Keypad: React.FC = () => {
                     return button;
                 })}
             </div>
+            <span className={styles.ipAddress}>{targetIp}</span>
         </div>
     );
 };
