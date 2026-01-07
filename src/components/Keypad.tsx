@@ -14,14 +14,7 @@ const Keypad: React.FC = () => {
                         size="large"
                         className={styles.key}
                         onClick={() => {
-                            let soundName;
-                            if (key === "*") soundName = "asterisk";
-                            else if (key === "#") soundName = "hash";
-                            else soundName = key;
-                            const sound = new Audio(
-                                `/keypad_sfx/${soundName}.mp3`
-                            );
-                            sound.play();
+                            playKeySound(key);
                         }}
                     >
                         {key}
@@ -33,3 +26,12 @@ const Keypad: React.FC = () => {
 };
 
 export default Keypad;
+
+function playKeySound(key: string) {
+    let soundName;
+    if (key === "*") soundName = "asterisk";
+    else if (key === "#") soundName = "hash";
+    else soundName = key;
+    const sound = new Audio(`/keypad_sfx/${soundName}.mp3`);
+    sound.play();
+}
