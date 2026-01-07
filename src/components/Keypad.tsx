@@ -62,11 +62,12 @@ const Keypad: React.FC = () => {
                             keySound.sound.volume = 0;
                         }
                     }
+                    
                     return <IonButton
                         key={key}
-                        color="light"
                         size="large"
-                        className={styles.key}
+                        color="light"
+                        className={styles.key + (isFinite(+key) ? " " +styles.numberKey : "")}
                         
                         onMouseDown={activateKeypad}
                         onMouseUp={stopAudioTrack}
