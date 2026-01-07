@@ -5,6 +5,7 @@
     margin: 0 auto;
     max-width: 300px;
     text-align: center;
+    margin-bottom: 1rem;
 }
 
 .bottomContainer {
@@ -36,6 +37,8 @@
     cursor: text;
     user-select: all;
     text-shadow: 0px 0px 12px rgba(255, 255, 255, 0.2);
+    margin-top: 0px;
+    margin-bottom: 1rem;
 }
 
 .inputDisplay:hover {
