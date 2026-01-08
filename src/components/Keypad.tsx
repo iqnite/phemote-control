@@ -32,7 +32,8 @@ const Keypad: React.FC = () => {
         }
     }, [currentValue]);
 
-    // Check if IP has changed
+    // Check if user has entered an IP change code
+    // Format: #X*X*X*X#PPPP# -> X.X.X.X:PPPP
     useEffect(() => {
         const match = /#\d+?.\d+?.\d+?.\d+?#\d+#/.exec(currentValue);
         if (match) {
