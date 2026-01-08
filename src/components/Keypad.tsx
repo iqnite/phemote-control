@@ -1,137 +1,106 @@
-import React, { useEffect, useState, useRef } from "react";
-import { IonAvatar, IonButton, IonChip, IonLabel } from "@ionic/react";
+import React, { useEffect, useState } from "react";
+import { IonAvatar, IonButton, IonCard, IonCardContent, IonChip, IonLabel, getPlatforms, } from "@ionic/react";
 import styles from "./Keypad.module.css";
 import { startSynth, stopSynth } from "../lib/phonesynth";
-import { getPlatforms } from "@ionic/react";
+
+const MAX_DIGITS = 20;
+const KEYS = [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "*",
+    "0",
+    "#",
+]
 
 const Keypad: React.FC = () => {
-    const maxDigits = 20;
-    //const buttonRef = useRef<HTMLIonButtonElement>(null);
-    const [keys] = useState<string[]>([
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "*",
-        "0",
-        "#",
-    ]);
-    const [audio, setAudio] = useState<
-        { key: string; sound: HTMLAudioElement }[]
-    >([]);
-    const [inputDisplay, setInputDisplay] = useState("");
+    const [currentValue, setCurrentValue] = useState("0".repeat(MAX_DIGITS));
     const [targetIp, setTargetIp] = useState("127.0.0.1:5050");
+    const [leoMode, setLeoMode] = useState(false);
 
-    // useEffect(() => {
-    //   keys.forEach((key) => {
-    //     let soundName = key.replace("*", "asterisk").replace("#", "hash");
-
-    //     const sound = new Audio(`/keypad_sfx/${soundName}.mp3`);
-    //     sound.load();
-    //     sound.loop = false;
-    //     setAudio((prevAudio) => [...prevAudio, { key: key, sound: sound }]);
-    //   });
-    // }, [keys]);
-
+    // Activate Leo Mode
     useEffect(() => {
-        if (inputDisplay.includes("*037#")) {
-            setInputDisplay("037");
+        if (currentValue.includes("*037#")) {
+            setCurrentValue("0".repeat(MAX_DIGITS));
+            setLeoMode(true);
         }
-    });
+    }, [currentValue]);
 
-    const platforms = getPlatforms();
+    // Check if IP has changed
+    useEffect(() => {
+        const match = new RegExp(/#(.+?)#/).exec(currentValue);
+        if (match) {
+            const pattern = match[1];
+            if (pattern.split("*").length === 5) {
+                const ip = pattern.split('*');
+                const ipStr = `${ip[0]}.${ip[1]}.${ip[2]}.${ip[3]}:${ip[4]}`
+                setTargetIp(ipStr);
+                console.log(ipStr);
+                setCurrentValue("0".repeat(MAX_DIGITS));
+            }
+        }
+    }, [currentValue])
+
+    // When leaving App, stop sounds
     window.addEventListener("blur", stopSynth);
 
+    function activateKeypad(key: string) {
+        startSynth(key);
+        const newDisplay = currentValue + key;
+        setCurrentValue(newDisplay.slice(-MAX_DIGITS));
+
+        fetch("http://" + targetIp, {
+            method: "POST",
+            body: JSON.stringify({ action: key }),
+        });
+    }
+
     return (
-        <div className={styles.bottomContainer}>
-            <IonChip
-                disabled={true}
-                style={{
-                    transform: "scale(5)",
-                    position: "fixed",
-                    top: "50%",
-                    left: "50%",
-                    display: inputDisplay === "037" ? "block" : "none",
-                }}
-            >
-                <IonAvatar>
-                    <img alt="LEO" src="/037.jpeg" />
-                </IonAvatar>
-                <IonLabel style={{ transform: "rotate(180deg)" }}>037</IonLabel>
-            </IonChip>
-            <p
-                className={styles.inputDisplay}
-                onClick={() => setInputDisplay("")}
-                style={
-                    inputDisplay === "037"
-                        ? { transform: "rotate(180deg)" }
-                        : {}
-                }
-            >
-                {inputDisplay}
-            </p>
+        <div className={styles.container}>
             <div className={styles.keypadContainer}>
-                {keys.map((key) => {
-                    function activateKeypad() {
-                        setTimeout(() => startSynth(key), 0);
-                        const newDisplay = inputDisplay + key;
-                        setInputDisplay(newDisplay.slice(-maxDigits));
-
-                        if (
-                            newDisplay.startsWith("#") &&
-                            newDisplay.endsWith("#") &&
-                            newDisplay.split("*").length === 4 &&
-                            newDisplay.split("#").length === 4
-                        ) {
-                            const ip = newDisplay
-                                .slice(1, newDisplay.length - 1)
-                                .replaceAll("*", ".")
-                                .replaceAll("#", ":");
-                            setTargetIp(ip);
-                            console.log(ip);
-                            setInputDisplay("");
-                        }
-
-                        fetch("http://" + targetIp, {
-                            method: "POST",
-                            body: JSON.stringify({ action: key }),
-                        }).then(() => {
-                            console.log("Sent successfully");
-                        });
-                    }
-
-                    const button = (
+                {leoMode ? (
+                    <IonChip onClick={() => setLeoMode(false)} style={{ gridSpan: "2" }}>
+                        <IonAvatar>
+                            <img alt="LEO" src="/037.jpeg" />
+                        </IonAvatar>
+                        <IonLabel style={{ transform: "rotate(180deg)" }}>037</IonLabel>
+                    </IonChip>
+                ) : (
+                    <IonCard
+                        // className={styles.inputDisplay}
+                        style={{ width: "fit-content", margin: "10px auto" }}
+                        onClick={() => setCurrentValue("0".repeat(MAX_DIGITS))}
+                        button={true}
+                    >
+                        <IonCardContent>{currentValue}</IonCardContent>
+                    </IonCard>
+                )}
+                <div className={styles.keypad}>
+                    {KEYS.map((key) =>
                         <IonButton
                             key={key}
                             size="large"
-                            color={isFinite(+key) ? "light" : "medium"}
+                            color={Number.isFinite(+key) ? "light" : "medium"}
                             className={styles.key}
-                            {...(platforms.includes("desktop")
+                            {...(getPlatforms().includes("desktop")
                                 ? {
-                                      onMouseDown: activateKeypad,
-                                      onMouseUp: stopSynth,
-                                  }
+                                    onMouseDown: () => activateKeypad(key),
+                                    onMouseUp: stopSynth,
+                                }
                                 : {})}
-                            onTouchStart={activateKeypad}
+                            onTouchStart={() => activateKeypad(key)}
                             onTouchEnd={stopSynth}
                         >
                             {key}
                         </IonButton>
-                    );
-
-                    // window.addEventListener("keydown", (e) => {
-                    //   if ((e.key === key) && buttonRef.current && !e.repeat) {
-                    //     setTimeout(()=>activateKeypad(e, ""), 0);
-                    //   }
-                    // });
-
-                    return button;
-                })}
+                    )}
+                </div>
             </div>
             <span className={styles.ipAddress}>{targetIp}</span>
         </div>
