@@ -84,6 +84,8 @@ const Keypad: React.FC = () => {
             fetch("http://" + targetIp, {
                 method: "POST",
                 body: JSON.stringify({ action: key }),
+            }).catch(err => {
+                setTimeout(()=>alert(err), 250);
             });
         }
     }
