@@ -34,16 +34,14 @@ const Keypad: React.FC = () => {
 
     // Check if IP has changed
     useEffect(() => {
-        const match = new RegExp(/#(.+?)#/).exec(currentValue);
+        const match = /#\d+?.\d+?.\d+?.\d+?#\d+#/.exec(currentValue);
         if (match) {
-            const pattern = match[1];
-            if (pattern.split("*").length === 5) {
-                const ip = pattern.split('*');
-                const ipStr = `${ip[0]}.${ip[1]}.${ip[2]}.${ip[3]}:${ip[4]}`
-                setTargetIp(ipStr);
-                console.log(ipStr);
-                setCurrentValue("0".repeat(MAX_DIGITS));
-            }
+            const pattern = match[0].slice(1, match[0].length - 1);
+            const ip = pattern.split('*').map(x => x.split("#")).flat();
+            const ipStr = `${ip[0]}.${ip[1]}.${ip[2]}.${ip[3]}:${ip[4]}`
+            setTargetIp(ipStr);
+            console.log(ipStr);
+            setCurrentValue("0".repeat(MAX_DIGITS));
         }
     }, [currentValue])
 
