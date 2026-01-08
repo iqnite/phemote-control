@@ -9,10 +9,10 @@ const orderedKeys = [
     "7", "8", "9", "C",
     "*", "0", "#", "D"
 ];
-const horizontalFrequencies = [
+let horizontalFrequencies = [
     1209, 1336, 1477, 1633
 ];
-const verticalFrequencies = [
+let verticalFrequencies = [
     697, 770, 852, 941
 ];
 
@@ -44,15 +44,23 @@ export function startSynth(key: string) {
     //console.log("Synth Started");
     if (osc1) {
         osc1.frequency.setValueAtTime(f1, 0);
-        osc1.type = "sine";
+        osc1.type = "sawtooth";
     }
     if (osc2) {
         osc2.frequency.setValueAtTime(f2, 0);
-        osc2.type = "sine";
+        osc2.type = "sawtooth";
     }
     gainNode?.gain?.setValueAtTime(1, 0);
 }
 export function stopSynth() {
     //console.log("Synth Stopped");
     gainNode?.gain?.setValueAtTime(0, 0);
+}
+
+export function overrideHorizontalFrequencies(values: number[]) {
+    horizontalFrequencies = values;
+}
+
+export function overrideVerticalFrequencies(values: number[]) {
+    verticalFrequencies = values;
 }
