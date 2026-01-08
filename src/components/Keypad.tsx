@@ -30,8 +30,19 @@ const Keypad: React.FC = () => {
         if (match) {
             setCurrentValue("0".repeat(MAX_DIGITS));
             const secretCode = match.slice(1, match.length - 1);
-            if (secretCode === "037") {
-                setLeoMode(true);
+
+            switch (secretCode) {
+                case "037":
+                    setLeoMode(true);
+                    break;
+            
+                default:
+                    // send other custom compound codes to the server
+                    fetch("http://" + targetIp, {
+                        method: "POST",
+                        body: JSON.stringify({ action: "code:"+secretCode }),
+                    });
+                    break;
             }
         }
     }, [currentValue]);
@@ -58,10 +69,13 @@ const Keypad: React.FC = () => {
         const newDisplay = currentValue + key;
         setCurrentValue(newDisplay.slice(-MAX_DIGITS));
 
-        fetch("http://" + targetIp, {
-            method: "POST",
-            body: JSON.stringify({ action: key }),
-        });
+        if (!newDisplay.includes("*") && isFinite(+key)) {
+            // do not send packets if user is building a compound code (eg: *037#)
+            fetch("http://" + targetIp, {
+                method: "POST",
+                body: JSON.stringify({ action: key }),
+            });
+        }
     }
 
     return (
