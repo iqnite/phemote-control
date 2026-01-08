@@ -2,6 +2,7 @@ let audioCtx: AudioContext | null = null;
 let osc1: OscillatorNode | null = null;
 let osc2: OscillatorNode | null = null;
 let gainNode: GainNode | null = null;
+let reverbNode: ConvolverNode | null = null;
 
 const orderedKeys = [
     "1", "2", "3", "A",
@@ -31,7 +32,7 @@ function setupAudioContext() {
     osc2.connect(gainNode);
     osc2.start(0);
     osc2.type = "sine";
-    
+
 }
 export function startSynth(key: string) {
     // expects to be called after a user interaction
@@ -74,4 +75,30 @@ export function overrideWaveShape(shape: OscillatorType) {
         console.log("b");
         osc2.type = shape;
     }
+}
+
+
+export function addGiantReverb() {
+    if (reverbNode) {
+        return;
+    }
+    if (!audioCtx || !gainNode) {
+        return;
+    }
+    reverbNode = audioCtx.createConvolver();
+    //gainNode.disconnect(audioCtx.destination);
+    gainNode.connect(reverbNode);
+    reverbNode.connect(audioCtx.destination);
+
+    const impulseBuffer = audioCtx.createBuffer(2, 24000 * 4, 24000);
+
+
+    for (let c = 0; c < impulseBuffer.numberOfChannels; c++) {
+        const impulseData = impulseBuffer.getChannelData(c);
+        for (let i = 0; i < impulseData.length; i++) {
+            impulseData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / impulseData.length, 4);
+        }
+    }
+
+    reverbNode.buffer = impulseBuffer;
 }
