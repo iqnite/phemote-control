@@ -26,7 +26,7 @@ const Keypad: React.FC = () => {
 
     // Activate Leo Mode
     useEffect(() => {
-        const match = /\*\d+?#/.exec(currentValue)?.[0];
+        const match = /^[^#]*?(\*\d+?#)/.exec(currentValue)?.[1];
         if (match) {
             setCurrentValue("0".repeat(MAX_DIGITS));
             const secretCode = match.slice(1, match.length - 1);
