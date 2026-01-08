@@ -69,7 +69,7 @@ const Keypad: React.FC = () => {
         const newDisplay = currentValue + key;
         setCurrentValue(newDisplay.slice(-MAX_DIGITS));
 
-        if (!newDisplay.includes("*") && isFinite(+key)) {
+        if (!newDisplay.includes("*") && !newDisplay.includes("#")) {
             // do not send packets if user is building a compound code (eg: *037#)
             fetch("http://" + targetIp, {
                 method: "POST",
