@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IonAvatar, IonButton, IonCard, IonCardContent, IonChip, IonLabel, getPlatforms, } from "@ionic/react";
 import styles from "./Keypad.module.css";
-import { startSynth, stopSynth } from "../lib/phonesynth";
+import { overrideHorizontalFrequencies, overrideVerticalFrequencies, overrideWaveShape, startSynth, stopSynth } from "../lib/phonesynth";
 
 const MAX_DIGITS = 20;
 const KEYS = [
@@ -34,6 +34,12 @@ const Keypad: React.FC = () => {
             switch (secretCode) {
                 case "037":
                     setLeoMode(true);
+                    break;
+
+                case "1207":
+                    overrideHorizontalFrequencies([440.0, 493.9, 523.3, 587.3]);
+                    overrideVerticalFrequencies([659.3, 698.5, 784.0, 880.0]);
+                    overrideWaveShape("sawtooth");
                     break;
             
                 default:

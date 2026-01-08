@@ -26,9 +26,11 @@ function setupAudioContext() {
     osc1 = audioCtx.createOscillator();
     osc1.connect(gainNode);
     osc1.start(0);
+    osc1.type = "sine";
     osc2 = audioCtx.createOscillator();
     osc2.connect(gainNode);
     osc2.start(0);
+    osc2.type = "sine";
     
 }
 export function startSynth(key: string) {
@@ -44,11 +46,9 @@ export function startSynth(key: string) {
     //console.log("Synth Started");
     if (osc1) {
         osc1.frequency.setValueAtTime(f1, 0);
-        osc1.type = "sawtooth";
     }
     if (osc2) {
         osc2.frequency.setValueAtTime(f2, 0);
-        osc2.type = "sawtooth";
     }
     gainNode?.gain?.setValueAtTime(1, 0);
 }
@@ -63,4 +63,15 @@ export function overrideHorizontalFrequencies(values: number[]) {
 
 export function overrideVerticalFrequencies(values: number[]) {
     verticalFrequencies = values;
+}
+
+export function overrideWaveShape(shape: OscillatorType) {
+    if (osc1) {
+        console.log("a");
+        osc1.type = shape;
+    }
+    if (osc2) {
+        console.log("b");
+        osc2.type = shape;
+    }
 }
