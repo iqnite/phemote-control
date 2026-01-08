@@ -24,7 +24,7 @@ const Keypad: React.FC = () => {
     const [targetIp, setTargetIp] = useState("127.0.0.1:5050");
     const [leoMode, setLeoMode] = useState(false);
 
-    // Activate Leo Mode
+    // Check if the user has entered a secret code
     useEffect(() => {
         const match = /^[^#]*?(\*\d+?#)/.exec(currentValue)?.[1];
         if (match) {
