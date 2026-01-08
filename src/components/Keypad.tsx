@@ -26,9 +26,13 @@ const Keypad: React.FC = () => {
 
     // Activate Leo Mode
     useEffect(() => {
-        if (currentValue.includes("*037#")) {
+        const match = /\*\d+?#/.exec(currentValue)?.[0];
+        if (match) {
             setCurrentValue("0".repeat(MAX_DIGITS));
-            setLeoMode(true);
+            const secretCode = match.slice(1, match.length - 1);
+            if (secretCode === "037") {
+                setLeoMode(true);
+            }
         }
     }, [currentValue]);
 
